@@ -103,10 +103,10 @@ come back to it after a while.
 
 ``` r
 #installing packages is done using the install.packages() function
-install.packages("tidyverse")(eval = FALSE)
+install.packages("tidyverse")
 
 #once you have downloaded the package, you need to install it using the library() function
-library(tidyverse)(eval = FALSE)
+library(tidyverse)
 ```
 
 **Note** that the install.packages() function requires quotation marks,

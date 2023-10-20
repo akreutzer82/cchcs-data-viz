@@ -67,10 +67,10 @@ The below code chunk shows you how to do this. Note, the lines starting with a \
 #| eval: false
 
 #installing packages is done using the install.packages() function
-install.packages("tidyverse")(eval = FALSE)
+install.packages("tidyverse")
 
 #once you have downloaded the package, you need to install it using the library() function
-library(tidyverse)(eval = FALSE)
+library(tidyverse)
 ```
 
 **Note** that the install.packages() function requires quotation marks, while the library() function does not.

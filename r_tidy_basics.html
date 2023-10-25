@@ -103,7 +103,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="r-rstudio" class="level2">
 <h2 class="anchored" data-anchor-id="r-rstudio">R &amp; RStudio</h2>
-<p>I will use R and RStudio to create different plots. I will provide all code and output in a separate document before the Lunch &amp; Learn in case you would like to follow along or try the code on your own.</p>
+<p>I will use R and RStudio to create different plots in next week’s Lunch &amp; Learn. I will provide all code and output in a separate document before the Lunch &amp; Learn in case you would like to follow along or try the code on your own. You can copy and paste the code into RStudio.</p>
 <p><strong>Click</strong> <a href="https://rstudio-education.github.io/hopr/starting.html" target="_blank" title="How to install R &amp; RStudio">here</a> for a <strong>guide to installing R &amp; RStudio</strong>.</p>
 </section>
 <section id="why-use-r-at-all" class="level2">
@@ -131,9 +131,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><img src="r_studio_new_script.png" class="img-fluid"></p>
 <p>When you run code from the script, your code and its output will automatically be shown in the console. By default, <strong>plots</strong> and rendered tables will be shown in the <strong>bottom right</strong> <strong>panel</strong>, which also has tabs for files, packages, etc.</p>
 <p><strong>***Note that your plot will be rendered to conform to the size of your panel. So depending on how you have the size set, the plot might look funny initially. You can change the size of the panel at any time and the plot will adjust. You can set a specific size and resolution when you save or export the plot.</strong></p>
-<p>There are endless options to customize the appearance of RStudio, including switching to a “dark” mode that saves your eyes during long coding sessions and changing the layout of the panels. You can make adjustments via Tools -&gt; Global Options.</p>
+<section id="customizing-the-appearance-of-rstudio" class="level3">
+<h3 class="anchored" data-anchor-id="customizing-the-appearance-of-rstudio">Customizing the appearance of RStudio</h3>
+<p>There are endless options to customize the appearance of RStudio, including switching to “dark” mode and changing the layout of the panels. You can make adjustments via Tools -&gt; Global Options.</p>
 <p>I like to use a dark theme with the script in the top left, console in the top right, and the plot panel in the bottom right:</p>
 <p><img src="r_studio_AK.png" class="img-fluid"></p>
+</section>
 </section>
 <section id="r-basics" class="level2">
 <h2 class="anchored" data-anchor-id="r-basics">R basics</h2>
@@ -144,13 +147,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The below code chunk shows you how to do this. Note, the lines starting with a # are “commented out”, meaning they will not be executed by the program. You can use this to include comments in your code for reproducibility and to remember what you were doing in a script when you come back to it after a while.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#installing packages is done using the install.packages() function</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)(<span class="at">eval =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#once you have downloaded the package, you need to install it using the library() function</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)(<span class="at">eval =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#note that the install.packages() function requires quotation marks (single or double are OK), while the library() function does not</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#once you have downloaded the package, you need to load it using the library() function</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p><strong>Note</strong> that the install.packages() function requires quotation marks, while the library() function does not.</p>
+</section>
+</section>
+<section id="the-tidyverse-and-ggplot2" class="level2">
+<h2 class="anchored" data-anchor-id="the-tidyverse-and-ggplot2">The tidyverse and ggplot2</h2>
+<p>There are many different packages to analyze data and create plots in R. In fact, you can do all of this in base R. However, ggplot2, which is part of the tidyverse collection of packages, is one of the most versatile and powerful graphing packages. It allows you to create and customize anything from basic scatter plots to spacial data displayed on maps. When you install and load the tidyverse package (as shown above), ggplot2 is automatically installed and loaded.</p>
+<section id="tidy-data" class="level3">
+<h3 class="anchored" data-anchor-id="tidy-data">Tidy data</h3>
+<p>For ggplot2 your data should be in a “tidy” format (which is essentially “long” format), where each row represents one observation and columns represent the variables available for these observations. The below code creates a mock data set of 5 participants with systolic blood pressure measurements (sbp) before (pre) and after (post) a treatment.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#setting "seed" to make sure everyone's simulated data are the same</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">111</span>) </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#create wide data set </span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">id =</span> <span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">5</span>), <span class="co">#5 participants</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">sbp_pre =</span> <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">130</span>, <span class="dv">8</span>), <span class="dv">0</span>), <span class="co">#SBP before</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">sbp_post =</span> <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">115</span>, <span class="dv">8</span>),<span class="dv">0</span>)) <span class="co">#SBP after</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>df <span class="co">#this will show the table in your console</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This should create the following (wide) data set:</p>
+<p><img src="wide_data.png" class="img-fluid"></p>
+<p>Note how the observation “time point” (pre vs.&nbsp;post) is encoded in the column header, rather than being listed as one row per observation.</p>
+<p>Here is how you would reshape it to long (“tidy”) format using the tidyverse function pivot_longer().</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#reshape to long data set</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_long <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>id,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_sep =</span> <span class="st">"_"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">".value"</span>, <span class="st">"time_point"</span>))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>df_long</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This should give you the following output:</p>
+<p><img src="long_data.png" class="img-fluid"></p>
+<p>I will provide a link to a document with code and examples of graphs before the Lunch &amp; Learn next week. You can follow along making the graphs by just copying and pasting the code in to RStudio.</p>
+<p>Please let me know if you have any questions before, during, or after the Lunch &amp; Learn.</p>
 </section>
 </section>
 

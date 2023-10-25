@@ -1,7 +1,7 @@
 ---
 title: "R & tidyverse basics"
 author: "Andreas Kreutzer"
-format: gfm
+format: html
 editor: visual
 ---
 
@@ -9,7 +9,7 @@ editor: visual
 
 I will use R and RStudio to create different plots in next week's Lunch & Learn. I will provide all code and output in a separate document before the Lunch & Learn in case you would like to follow along or try the code on your own. You can copy and paste the code into RStudio.
 
-**Click** [here](https://rstudio-education.github.io/hopr/starting.html "How to install R & RStudio") for a **guide to installing R & RStudio**.
+**Click** [here](https://rstudio-education.github.io/hopr/starting.html "How to install R & RStudio"){target="_blank"} for a **guide to installing R & RStudio**.
 
 ## Why use R at all?
 

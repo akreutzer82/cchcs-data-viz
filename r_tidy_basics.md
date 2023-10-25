@@ -132,17 +132,23 @@ creates a mock data set of 5 participants with systolic blood pressure
 measurements (sbp) before (pre) and after (post) a treatment.
 
 ``` r
+#setting "seed" to make sure everyone's simulated data are the same
+set.seed(111) 
+
 #create wide data set 
-df <- data.frame(id = seq(1,5), #5 participants
+df <- tibble(id = seq(1,5), #5 participants
                  sbp_pre = round(rnorm(5, 130, 8), 0), #SBP before
                  sbp_post = round(rnorm(5, 115, 8),0)) #SBP after
 
 df #this will show the table in your console
 ```
 
-This should create the following (wide) data frame:
+This should create the following (wide) data set:
 
 ![](wide_data.png)
+
+Note how the observation “time point” (pre vs. post) is encoded in the
+column header, rather than being listed as one row per observation.
 
 Here is how you would reshape it to long (“tidy”) format using the
 tidyverse function pivot_longer().

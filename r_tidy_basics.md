@@ -3,9 +3,10 @@ Andreas Kreutzer
 
 ## R & RStudio
 
-I will use R and RStudio to create different plots. I will provide all
-code and output in a separate document before the Lunch & Learn in case
-you would like to follow along or try the code on your own.
+I will use R and RStudio to create different plots in next week’s Lunch
+& Learn. I will provide all code and output in a separate document
+before the Lunch & Learn in case you would like to follow along or try
+the code on your own.
 
 **Click**
 <a href="https://rstudio-education.github.io/hopr/starting.html"
@@ -72,10 +73,11 @@ look funny initially. You can change the size of the panel at any time
 and the plot will adjust. You can set a specific size and resolution
 when you save or export the plot.**
 
+### Customizing the appearance of RStudio
+
 There are endless options to customize the appearance of RStudio,
-including switching to a “dark” mode that saves your eyes during long
-coding sessions and changing the layout of the panels. You can make
-adjustments via Tools -\> Global Options.
+including switching to “dark” mode and changing the layout of the
+panels. You can make adjustments via Tools -\> Global Options.
 
 I like to use a dark theme with the script in the top left, console in
 the top right, and the plot panel in the bottom right:
@@ -105,9 +107,51 @@ come back to it after a while.
 #installing packages is done using the install.packages() function
 install.packages("tidyverse")
 
-#once you have downloaded the package, you need to install it using the library() function
+#once you have downloaded the package, you need to load it using the library() function
 library(tidyverse)
 ```
 
 **Note** that the install.packages() function requires quotation marks,
 while the library() function does not.
+
+## The tidyverse and ggplot2
+
+There are many different packages to analyze data and create plots in R.
+In fact, you can do all of this in base R. However, ggplot2, which is
+part of the tidyverse collection of packages, is one of the most
+versatile and powerful graphing packages. It allows you to create and
+customize anything from basic scatter plots to spacial data displayed on
+maps. When you install and load the tidyverse package (as shown above),
+ggplot2 is automatically installed and loaded.
+
+### Tidy data
+
+For ggplot2 your data should be in a “tidy” format (which is essentially
+“long” format), where each row represents one observation and columns
+represent the variables available for these observations. The below code
+creates a mock data set of 5 participants with systolic blood pressure
+measurements (sbp) before (pre) and after (post) a treatment. The second
+part of the code reshapes it to long (“tidy”) format.
+
+``` r
+#create wide data set 
+df <- data.frame(id = seq(1,5), #5 participants
+                 sbp_pre = round(rnorm(5, 130, 8), 0), #SBP before
+                 sbp_post = round(rnorm(5, 115, 8),0)) #SBP after
+df
+
+#reshape to long data set
+df_long <- df %>% 
+  pivot_longer(-id,
+               names_sep = "_",
+               names_to = c(".value", "time_point"))
+
+df_long
+```
+
+I will provide a link to a document with code and examples of graphs
+before the Lunch & Learn next week. You can follow along making the
+graphs by just copying and pasting the code in to RStudio.
+
+Please let me know if you have any questions before, during, or after
+the Lunch & Learn.

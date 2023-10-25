@@ -6,7 +6,7 @@ Andreas Kreutzer
 I will use R and RStudio to create different plots in next week’s Lunch
 & Learn. I will provide all code and output in a separate document
 before the Lunch & Learn in case you would like to follow along or try
-the code on your own.
+the code on your own. You can copy and paste the code into RStudio.
 
 **Click**
 [here](https://rstudio-education.github.io/hopr/starting.html "How to install R & RStudio")
@@ -129,16 +129,25 @@ For ggplot2 your data should be in a “tidy” format (which is essentially
 “long” format), where each row represents one observation and columns
 represent the variables available for these observations. The below code
 creates a mock data set of 5 participants with systolic blood pressure
-measurements (sbp) before (pre) and after (post) a treatment. The second
-part of the code reshapes it to long (“tidy”) format.
+measurements (sbp) before (pre) and after (post) a treatment.
 
 ``` r
 #create wide data set 
 df <- data.frame(id = seq(1,5), #5 participants
                  sbp_pre = round(rnorm(5, 130, 8), 0), #SBP before
                  sbp_post = round(rnorm(5, 115, 8),0)) #SBP after
-df
 
+df #this will show the table in your console
+```
+
+This should create the following (wide) data frame:
+
+![](wide_data.png)
+
+Here is how you would reshape it to long (“tidy”) format using the
+tidyverse function pivot_longer().
+
+``` r
 #reshape to long data set
 df_long <- df %>% 
   pivot_longer(-id,
@@ -147,6 +156,10 @@ df_long <- df %>%
 
 df_long
 ```
+
+This should give you the following output:
+
+![](long_data.png)
 
 I will provide a link to a document with code and examples of graphs
 before the Lunch & Learn next week. You can follow along making the

@@ -9,9 +9,8 @@ before the Lunch & Learn in case you would like to follow along or try
 the code on your own.
 
 **Click**
-<a href="https://rstudio-education.github.io/hopr/starting.html"
-target="_blank" title="How to install R &amp; RStudio">here</a> for a
-**guide to installing R & RStudio**.
+[here](https://rstudio-education.github.io/hopr/starting.html "How to install R & RStudio")
+for a **guide to installing R & RStudio**.
 
 ## Why use R at all?
 

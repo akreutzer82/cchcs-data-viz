@@ -9,7 +9,7 @@ editor: visual
 
 I will use R and RStudio to create different plots in next week's Lunch & Learn. I will provide all code and output in a separate document before the Lunch & Learn in case you would like to follow along or try the code on your own.
 
-**Click** [here](https://rstudio-education.github.io/hopr/starting.html "How to install R & RStudio"){target="_blank"} for a **guide to installing R & RStudio**.
+**Click** [here](https://rstudio-education.github.io/hopr/starting.html "How to install R & RStudio") for a **guide to installing R & RStudio**.
 
 ## Why use R at all?
 
@@ -47,7 +47,7 @@ When you run code from the script, your code and its output will automatically b
 
 **\*\*\*Note that your plot will be rendered to conform to the size of your panel. So depending on how you have the size set, the plot might look funny initially. You can change the size of the panel at any time and the plot will adjust. You can set a specific size and resolution when you save or export the plot.**
 
-### Customizing the appearance of RStudio 
+### Customizing the appearance of RStudio
 
 There are endless options to customize the appearance of RStudio, including switching to "dark" mode and changing the layout of the panels. You can make adjustments via Tools -\> Global Options.
 

@@ -65,7 +65,7 @@ In RStudio, you can install packages using point-and-click via Tools -\> Install
 
 The below code chunk shows you how to do this. Note, the lines starting with a \# are "commented out", meaning they will not be executed by the program. You can use this to include comments in your code for reproducibility and to remember what you were doing in a script when you come back to it after a while.
 
-```{r Installing and loading packages}
+```{r Installing_and_loading_packages}
 #| eval: false
 
 #installing packages is done using the install.packages() function
@@ -85,7 +85,7 @@ There are many different packages to analyze data and create plots in R. In fact
 
 For ggplot2 your data should be in a "tidy" format (which is essentially "long" format), where each row represents one observation and columns represent the variables available for these observations. The below code creates a mock data set of 5 participants with systolic blood pressure measurements (sbp) before (pre) and after (post) a treatment.
 
-```{r Create wide data}
+```{r Create_wide_data}
 #| eval: false
 
 #setting "seed" to make sure everyone's simulated data are the same
@@ -108,7 +108,7 @@ Note how the observation "time point" (pre vs. post) is encoded in the column he
 
 Here is how you would reshape it to long ("tidy") format using the tidyverse function pivot_longer().
 
-```{r Reshape to long data}
+```{r Reshape_to_long_data}
 #| eval: false
 
 #reshape to long data set

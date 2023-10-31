@@ -1,31 +1,579 @@
 ---
 title: "Data Visualization with R"
 author: "Andreas Kreutzer"
-format: gfm
+format: html
 editor: visual
 ---
 
-## Quarto
+## Data Visualization With ggplot2
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+The following document will give you some basics on data visualization using ggplot2. If you are completely new to R, [here](https://akreutzer82.github.io/cchcs-data-viz/r_tidy_basics.html){target="_blank"} is a quick introduction on how to install R and RStudio, some basic functions, and the data format needed for best results with ggplot2.
 
-## Running Code
+## Packages Used in This Presentation
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+The main packages I will use in this presentation are **tidyverse** (which includes ggplot2), **medicaldata** (which includes the data sets I will use for demonstration), and **patchwork**. I'm including additional packages I will show during the presentation; these are not required to succesfully use the code in this document.
 
-```{r addition}
-1 + 1
+First you need to install the packages as follows:
+
+```{r install_packages}
+#| eval: false
+
+#required packages
+install.packages("tidyverse")
+install.packages("medicaldata")
+install.packages("patchwork")
+
+#additional packages
+install.packages("ggthemes")
 ```
 
-You can add options to executable code like this
+Then you need to load the packages:
+
+```{r load_packages}
+
+#required packages
+library(tidyverse)
+library(medicaldata)
+library(patchwork)
+
+#additional packages
+library(ggthemes)
+```
+
+## Load Data
+
+Next we need to load the data we will be working with. R has many built-in data sets for practice and teaching, which you can explore by typing **data()** into your console. I decided to use data from the **medicaldata** package, since that will be similar to the type of data you might be working with. To load built-in data sets, you just include the data set name in the parentheses behind the **data()** function. We will start with the "laryngoscope" data.
+
+```{r load_laryngoscope_data}
+
+data("laryngoscope")
+```
+
+This data set comes from an RCT that included 99 adult patients who needed orotracheal intubation. The purpose of the study was to compare a novel video laryngoscope (Pentax AWS) with the standard of care laryngoscope (Macintosh). A more thorough introduction to the study can be found [here](https://akreutzer82.github.io/cchcs-data-viz/laryngoscope_dataset_introduction.pdf){target="_blank"} (data dictionary [here](https://akreutzer82.github.io/cchcs-data-viz/laryngoscope_data_dictionary.pdf){target="_blank"}).
+
+## Explore Data
+
+A good first step is to look at the properties of the data set. The **str()** function will give us the structure of the data set including:
+
+1.  The "class" of the object we're exploring (in this case a data frame)
+
+2.  Number of observations
+
+3.  Number of variables
+
+4.  Variable names
+
+5.  Variable type (in this case "num" for numeric)
+
+6.  The first few observations
+
+```{r explore_data_with_str}
+
+str(laryngoscope)
+```
+
+The **head()** and **tail()** functions give us the first/last 6 observations in each data set respectively. You can also add the number of observations you want to see as an additional argument in both of these functions:
+
+```{r head_tail}
+#default number of observations = 6
+head(laryngoscope)
+
+#specify number of observations with an argument
+tail(laryngoscope, n = 2)
+```
+
+## Grammar of Graphics in ggplot2
+
+ggplot2 graphs are based on the idea of a "grammar of graphics" (hence the name **gg**plot2), which is intended to plot any kind of plot with the same "grammatical" structure in your code. We specify multiple layers of the plot that build on top of each other. These layers are:
+
+1.  Data
+
+2.  Mapping
+
+3.  Statistics
+
+4.  Scales
+
+5.  Geometries
+
+6.  Facets
+
+7.  Coordinates
+
+8.  Theme
+
+### Building a Histogram Using the Grammar of Graphics
+
+Maybe we want to start with examining the distribution of age in our sample. We can start with a basic histogram.
+
+The first step will always be to call the data; in our case this is the data frame called **laryngoscope**. We will map the data onto a plot area using the **ggplot()** function. Mapping is done using the **aes()** function, which stands for "aesthetics". This function requires arguments for X and Y variables as needed for the graph; it allows additional arguments to include grouping by variables and mapping color onto different groups.
+
+I will use the "tidy" style of coding employing the "pipe" operator (**%\>%**), which can be understood as taking an object and then performing operations on it. This allows me to make adjustments to the data as I'm plotting it. Here, I will always filter out any rows that are missing data for age using the **is.na()** function. This function returns the data points that don't have a value, which are listed as *NA* in R. By putting an exclamation point in front of the function, I'm asking R to return all data points that do **not** have an *NA* as the observation.
+
+In plain English, the below would basically read: "Take the laryngoscope data. Then return all data points that do not have an NA listed for the variable age. Then create a ggplot."
+
+```{r create_plot_area}
+laryngoscope  %>% 
+  filter(!is.na(age)) %>%  #remove participants with missing age data
+  ggplot(aes(x = age))
+```
+
+This will only create the plot area, since ggplot does not know what type of statistics/geometry we want it to employ. We add additional layers of graphs using the **+** operator.
+
+```{r basic_histogram}
+#Basic Histogram
+laryngoscope %>% 
+  filter(!is.na(age)) %>%
+  ggplot(aes(x = age)) +
+  geom_histogram()
+```
+
+This will give you a warning message that ggplot uses 30 bins as a default. A different number of bins might be better. We could ask ggplot to combine ages in 5-year bins by using the binwidth argument:
+
+```{r change_binwidth}
+#Change bin width
+laryngoscope %>% 
+  filter(!is.na(age)) %>% 
+  ggplot(aes(age)) +
+  geom_histogram(binwidth = 5)
+```
+
+**Note** that you don't have to type out the argument name in a function in R; if you don't include the argument name, R assumes that you are providing the arguments in the order they are listed in the function. You can ask R to list the arguments in a function using the **args()** function. Or you can check the documentation for a function by typing **?** followed by the function name into the console. In the last code chunk I have omitted the specification of the argument for the x-axis variable and have written only "age", since the x-axis variable is the first argument required by the function **aes()**.
+
+We can separate the bins visually a little more by adding a black border around each column using the col (color) argument. You can specify the color using a word or hex code. Note that you need to surround the color with quotation marks (single or double).
+
+```{r add_black_borders}
+#Add black borders
+laryngoscope %>% 
+  filter(!is.na(age)) %>% 
+  ggplot(aes(age)) +
+  geom_histogram(binwidth = 5, col = 'black')
+```
+
+Next we probably want to include a plot title and adjust the axis labels. We do this by adding a labs (labels) layer with the **+** operator.
+
+```{r add_title_change_labels}
+#Add title and edit axis labels
+laryngoscope %>% 
+  filter(!is.na(age)) %>% 
+  ggplot(aes(age)) +
+  geom_histogram(binwidth = 5, col = 'black') +
+  labs(title = 'Distribution of Age',
+       y = 'Count',
+       x = 'Age (years)')
+```
+
+Then we might want to change the look of the graph by setting a different theme. ggplot2 includes a variety of themes; there are also other packages (such as ggthemes) that include additional themes. For a clean publication look, theme_classic() is a good option. We just add this layer using the **+** operator.
+
+```{r changing_theme}
+#Change theme
+laryngoscope %>% 
+  filter(!is.na(age)) %>% 
+  ggplot(aes(age)) +
+  geom_histogram(binwidth = 5, col = 'black') +
+  labs(title = 'Distribution of Age',
+       y = 'Count',
+       x = 'Age (years)') +
+  theme_classic()
+```
+
+Now, we might want to change the font size and center the title.
+
+```{r change_font_size_center_title}
+#Change font size and center title
+laryngoscope %>% 
+  filter(!is.na(age)) %>% 
+  ggplot(aes(age)) +
+  geom_histogram(binwidth = 5, col = 'black') +
+  labs(title = 'Distribution of Age',
+       y = 'Count',
+       x = 'Age (years)') +
+  theme_classic(base_size = 16) + #base size applies to all text
+  theme(plot.title = element_text(hjust = 0.5)) #center title
+```
+
+We might want to know if there is a difference in age distribution when comparing ASA score.The easiest way to look at this in a plot, is to add a "fill" to our ggplot **aes()** function. This will tell ggplot that we are grouping data by whatever we choose for our fill (here the variable asa). Remember, all variables are encoded as "numeric" in this data frame. So if we just feed asa into the fill argument, ggplot reads this as a continuous or ordinal variable, rather than as a group, and gives us an error message. We could change this in the data frame by making the variable a "factor". This would be the most efficient way if we want to make multiple plots and/or analyze the data. However, here I will show you that you can still do this within the code you use to make the plot.
+
+```{r age_distribution_by_asa_score}
+#Is there a difference in age distribution between ASA groups?
+laryngoscope %>% 
+  ggplot(aes(age, fill = factor(asa))) +
+  geom_histogram(binwidth = 5, color = 'black') +
+  labs(title = 'Distribution of Age by ASA Score',
+       y = 'Count',
+       x = 'Age (years)',
+       fill = 'ASA Score') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+Note that we needed an additional line of code here to tell ggplot to assign the name "ASA Score" to the fill argument in the labs layer, which applies to the legend.
+
+This produces a stacked histogram, which can be rather confusing and difficult to read. So maybe a density plot would be the better visualization.
+
+To get a density plot we change our geom from **geom_histogram()** to **geom_density()**:
+
+```{r age_distribution_density_by_asa}
+laryngoscope %>% 
+  ggplot(aes(age, fill = factor(asa))) +
+  geom_density(alpha = 0.5) +
+  labs(title = 'Distribution of Age by ASA Score',
+       y = 'Density',
+       x = 'Age (years)',
+       fill = 'ASA Score') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+Note, we now no longer need a binwidth argument; however, I have added an "alpha" argument, which sets the transparency of the fill colors, where 0 is completely transparent (invisible) and 1 is completely opaque. I have also changed the y-axis title to Density, rather than Count. Also note, that the default colors selected by ggplot might not always be best. We can specify colors using the scale_fill\_ family of functions. I will show this in the presentation.
+
+We could split this graph up into multiple facets using the facet_grid() function.
+
+```{r multiple_facets_density}
+#One facet per ASA score
+laryngoscope %>% 
+  ggplot(aes(age, fill = factor(asa))) +
+  geom_density(alpha = 0.5) +
+  labs(title = 'Distribution of Age by ASA Score',
+       y = 'Density',
+       x = 'Age (years)',
+       fill = 'ASA Score') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  facet_grid(factor(asa)~.)
+```
+
+Now we no longer need the legend, which ggplot automatically generates any time we group by a variable (e.g., by using fill). WE remove the legend by adding the argument legend.position = 'none' to our theme layer. Note, I also removed the fill = 'ASA Score' argument from the labs layer.
+
+```{r remove_legend}
+#Don't need the legend anymore
+laryngoscope %>% 
+  ggplot(aes(age, fill = factor(asa))) +
+  geom_density(alpha = 0.5) +
+  labs(title = 'Distribution of Age by ASA Score',
+       y = 'Density',
+       x = 'Age (years)') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = 'none') +
+  facet_grid(factor(asa)~.)
+```
+
+We could include an additional grouping variable, e.g., to visualize a potential difference by gender. To show the difference between genders within each ASA Score group, it's best to now fill by gender and facet by ASA group. Now we might want a legend again to show which fill color corresponds to which gender. We also might want to change the legend title and the legend text (which I will do by assigning labels to the factor levels within the gender variable.)
+
+```{r density_by_asa_gender}
+#Is there a difference by gender?
+laryngoscope %>% 
+  ggplot(aes(age, fill = factor(gender, 
+                                labels = c('Female', 'Male')))) +
+  geom_density(alpha = 0.5) +
+  labs(title = 'Distribution of Age by ASA Score & Gender',
+       y = 'Density',
+       x = 'Age (years)',
+       fill = 'Gender') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  facet_grid(factor(asa)~.)
+```
+
+We could also rely on faceting only.
+
+```{r faceting_only}
+laryngoscope %>% 
+  ggplot(aes(age, fill = factor(gender))) +
+  geom_density(alpha = 0.5) +
+  labs(title = 'Distribution of Age by ASA Score & Gender',
+       y = 'Density',
+       x = 'Age (years)',
+       fill = 'Gender') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = 'none') +
+  facet_grid(factor(gender, labels = c('Female', 'Male'))~factor(asa, labels = c('ASA II', 'ASA III', 'ASA IV')))
+```
+
+To save the plot and specify the dimensions, resolution, and size, we can use the ggsave() function as follows. If you don't specify the full path, R will save **the last plot** in your "working directory". If you're not sure what your working directory is, you can ask R to print it out by typing getwd(). You can also set the working directory with the setwd() function.
+
+```{r get_wd_save_plot}
+#check what the working directory is
+getwd()
+
+#save plot
+ggsave('age_distribution_by_asa_gender.png', height = 5, width = 7, unit = 'in', dpi = 300)
+```
+
+### Building a Scatter Plot
+
+We might want to look at the relationship between age and the ease of intubation. We can do that by using geom_point(), which will display data points.
+
+```{r scatter_plot_age_ease}
+laryngoscope %>% 
+  filter(!is.na(ease) & !is.na(age)) %>% 
+  ggplot(aes(age, ease)) +
+  geom_point()
+```
+
+Now we can use some of the same functions and arguments as above to make the graph look nicer.
+
+```{r nicer_scatter_plot}
+laryngoscope %>% 
+  ggplot(aes(age, ease)) +
+  geom_point(size = 2.5) +
+  labs(title = 'Age vs. Ease of Trachial Incubation',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Age (years)') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+Since the study is an RCT comparing two instruments, we might want to fill the points by instrument.
+
+```{r fill_by_instrument}
+laryngoscope %>% 
+  ggplot(aes(age, ease, fill = factor(Randomization, labels = c('Macintosh', 'Pentax')))) +
+  geom_point(size = 2.5,
+             shape = 21) +
+  labs(title = 'Age vs. Ease of Trachial Incubation',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Age (years)',
+       fill = 'Instrument') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+We might want to include a regression line.
 
 ```{r}
-#| echo: false
-2 * 2
+#Add regression line
+laryngoscope %>% 
+  ggplot(aes(age, ease, fill = factor(Randomization, labels = c('Macintosh', 'Pentax')))) +
+  geom_point(size = 2.5,
+             shape = 21) +
+  labs(title = 'Age vs. Ease of Trachial Incubation',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Age (years)',
+       fill = 'Instrument') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_smooth(method = 'glm',
+              formula = 'y ~ x')
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+ggplot automatically includes 95% Confidence Intervals and multiple regression lines if we are grouping by a variable. If we don't group, we get a single regression line. We can remove the CIs by setting se = FALSE.
 
-```{r}
+```{r remove_grouping_change_regression_line_color_no_CIs}
+#Remove fill again
+laryngoscope %>% 
+  ggplot(aes(age, ease)) +
+  geom_point(size = 2.5) +
+  labs(title = 'Age vs. Ease of Trachial Incubation',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Age (years)') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_smooth(method = 'glm',
+              formula = 'y ~ x',
+              se = FALSE,
+              col = 'black')
+```
+
+### Building a Boxplot
+
+To create a boxplot, we use the geom_boxplot() function.
+
+```{r boxplot_mallampati_ease}
+laryngoscope %>% 
+  filter(!is.na(Mallampati)) %>% 
+  ggplot(aes(factor(Mallampati), ease)) +
+  geom_boxplot() +
+  labs(title = 'Ease of Tracheal Intubation by Mallampati Score',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Mallampati Score') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = 'none') 
+```
+
+In the spirit of transparency, we might want to display individual data points; we can add an additional layer using geom_jitter(). This is similar to the geom_point() function, but introduces horizontal jitter, so that data points don't overlap.
+
+```{r add_data_points}
+#Adding individual data points with geom_jitter()
+laryngoscope %>% 
+  filter(!is.na(Mallampati)) %>% 
+  ggplot(aes(factor(Mallampati), ease)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.3) +
+  labs(title = 'Ease of Tracheal Intubation by Mallampati Score',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Mallampati Score') +
+  theme_classic(base_size = 16) +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = 'none') 
+```
+
+Now we might want to represent the influence of the instrument used. To do this, we fill by the factor Randomization.
+
+```{r ease_by_mallampati_instrument}
+laryngoscope %>% 
+  filter(!is.na(Mallampati)) %>% 
+  ggplot(aes(factor(Mallampati), ease, 
+             fill = factor(Randomization,
+                           labels = c('Macintosh', 'Pentax')))) +
+  geom_boxplot() +
+  geom_jitter(width = 0.3) +
+  labs(title = 'Ease of Tracheal Intubation by Mallampati Score & Instrument',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Mallampati Score',
+       fill = 'Instrument') +
+  theme_classic(base_size = 12) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+Since there are no patients with a Mallampati Score of 4 who were intubated using the Macintosh, we could filter out these three patients for this graph.
+
+```{r filter_mallampati_4}
+laryngoscope %>% 
+  filter(!is.na(Mallampati) & Mallampati < 4) %>% 
+  ggplot(aes(factor(Mallampati), ease, 
+             fill = factor(Randomization,
+                           labels = c('Macintosh', 'Pentax')))) +
+  geom_boxplot() +
+  geom_jitter(width = 0.3) +
+  labs(title = 'Ease of Tracheal Intubation by Mallampati Score & Instrument',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Mallampati Score',
+       fill = 'Instrument') +
+  theme_classic(base_size = 12) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+The individual data points by Mallampati score now don't line up with the insturments. Rather than using geom_jitter(), we can use geom_point() with the position.jitterdodge argument, which introduces jitter and makes the points "dodge" eachother by grouping variable.
+
+```{r position_jitterdodge}
+laryngoscope %>% 
+  filter(!is.na(Mallampati) & Mallampati < 4) %>% 
+  ggplot(aes(factor(Mallampati), ease, 
+             fill = factor(Randomization,
+                           labels = c('Macintosh', 'Pentax')))) +
+  geom_boxplot() +
+  geom_point(position = position_jitterdodge()) +
+  labs(title = 'Ease of Tracheal Intubation by Mallampati Score & Instrument',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Mallampati Score',
+       fill = 'Instrument') +
+  theme_classic(base_size = 12) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+Now we could look at the effect of gender by faceting again.
+
+```{r facet_by_gender}
+laryngoscope %>% 
+  filter(!is.na(Mallampati) & Mallampati < 4) %>% 
+  ggplot(aes(factor(Mallampati), ease, fill = factor(Randomization, labels = c('Macintosh', 'Pentax')))) +
+  geom_boxplot() +
+  geom_point(position = position_jitterdodge()) +
+  labs(title = 'Ease of Tracheal Intubation by Mallampati Score & Instrument',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Mallampati Score',
+       fill = 'Instrument') +
+  theme_classic(base_size = 12) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  facet_grid(.~factor(gender, labels = c('Female', 'Male')))
+```
+
+We can save again using ggsave. We need to adjust the height and width to make sure everything fits and looks nice. This might require some trial and error.
+
+```{r ggsave_boxplot}
+ggsave('intubation_ease_by_mallapati_instrument_gender.png', height = 10, width = 14, unit = 'in', dpi = 300)
+```
+
+### Graph with Multiple Panels (the patchwork package)
+
+We might want to combine multiple plots into a single figure. There are different ways to do this. We save our graphs as individual objects and
+
+```{r saving_objects}
+p1 <- laryngoscope %>% 
+  filter(!is.na(Mallampati) & Mallampati < 4) %>% 
+  ggplot(aes(factor(Mallampati), ease, fill = factor(Randomization, labels = c('Macintosh', 'Pentax')))) +
+  geom_boxplot() +
+  geom_point(position = position_jitterdodge()) +
+  labs(title = 'Ease of Tracheal Intubation by Mallampati Score & Instrument',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Mallampati Score',
+       fill = 'Instrument') +
+  theme_classic(base_size = 16) +
+  theme(plot.title.position = 'panel') +
+  facet_grid(.~factor(gender, labels = c('Female', 'Male')))
+
+p2 <- laryngoscope %>% 
+  ggplot(aes(age, ease)) +
+  geom_point() +
+  labs(title = 'Age vs. Ease of Trachial Incubation',
+       y = 'Ease of Intubation (0-100)',
+       x = 'Age (years)') +
+  theme_classic(base_size = 16) +
+  theme(plot.title.position = 'panel') +
+  geom_smooth(method = 'glm',
+              formula = 'y ~ x',
+              se = FALSE,
+              col = 'black')
+
+p3 <- laryngoscope %>% 
+  ggplot(aes(age, fill = factor(gender))) +
+  geom_density(alpha = 0.5) +
+  labs(title = 'Distribution of Age by ASA Score & Gender',
+       y = 'Density',
+       x = 'Age (years)',
+       fill = 'Gender') +
+  theme_classic(base_size = 16) +
+  theme(plot.title.position = 'panel',
+        legend.position = 'none') +
+  facet_grid(factor(gender, labels = c('Female', 'Male'))~factor(asa, labels = c('ASA II', 'ASA III', 'ASA IV')))
+
+#combine with + operator
+p1 + p2 + p3
 
 ```
+
+This first graph doesn't look very nice, but we can change the alignment. There are many different options to do this. Here is one:
+
+```{r realign}
+#change alignment
+(p1 + p2) / p3
+```
+
+We can add annotations, such as an overarching plot title, subtitle, caption, and panel labels. We need to save the combined plot into an object and then add a layer for annotations.
+
+```{r adding_annotations}
+#change alignment
+combined_p <- (p1 + p2) / p3
+
+#include annotations
+combined_p +
+  plot_annotation(
+    title = 'Combined Plot',
+    subtitle = 'All three plots in one figure!',
+    caption = 'Disclaimer: This combination is probably not very insightful',
+    tag_levels = 'A')
+```
+
+The base size is now so large that some text is cut off and the plots are harder to read. If we want to apply a theme layer to all plots in the combined figure, we need to do so using the ampersand operator, rather than the + operator (which only adds the theme to the last plot).
+
+```{r adjust_theme}
+#create new object 
+annotated_p <- combined_p +
+  plot_annotation(
+    title = 'Combined Plot',
+    subtitle = 'All three plots in one figure!',
+    caption = 'Disclaimer: This combination is probably not very insightful',
+    tag_levels = 'A')
+
+#add theme layer
+annotated_p &
+  theme_classic(base_size = 12)
+
+```
+
+There are many many more ways of combining plots, detailing the layout (e.g., insets), and annotating them. A great guide to patchwork can be found [here](https://patchwork.data-imaginist.com/index.html){target="_blank"}.
